@@ -20,6 +20,7 @@ target_link_libraries(${PROJECT_NAME}.test
     ${PROJECT_NAME}
     gtest
     gmock
+    pthread
 )
 
 install(TARGETS ${PROJECT_NAME}.test
