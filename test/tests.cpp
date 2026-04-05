@@ -121,12 +121,11 @@ TEST_F(DoorTest, NoExceptionThrownWhenDoorClosedBeforeTimeoutExpires) {
   Timer timer;
   tDoor->unlock();
   EXPECT_TRUE(tDoor->isDoorOpened());
-  
-  // Закрываем дверь до истечения таймаута
+
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   tDoor->lock();
   EXPECT_FALSE(tDoor->isDoorOpened());
-  
+
   DoorTimerAdapter adapter(*tDoor);
   EXPECT_NO_THROW({
     timer.tregister(tDoor->getTimeOut(), &adapter);
@@ -136,12 +135,10 @@ TEST_F(DoorTest, NoExceptionThrownWhenDoorClosedBeforeTimeoutExpires) {
 TEST_F(DoorTest, NoExceptionThrownWhenDoorClosedImmediatelyAfterOpening) {
   Timer timer;
   DoorTimerAdapter adapter(*tDoor);
-  
-  // Открываем и сразу закрываем дверь
+
   tDoor->unlock();
-  tDoor->lock();  // Сразу закрываем
-  
-  // Таймер не должен вызвать исключение, даже если время прошло
+  tDoor->lock();
+
   EXPECT_NO_THROW({
     timer.tregister(tDoor->getTimeOut(), &adapter);
   });
@@ -179,17 +176,15 @@ TEST_F(AdapterTest, AdapterTimeoutDoesNotThrowExceptionWhenDoorIsClosed) {
 TEST(TimedDoorMultipleAdaptersTest, MultipleAdaptersShareSameDoorState) {
   TimedDoor door(2);
   door.unlock();
-  
+
   DoorTimerAdapter adapter1(door);
   DoorTimerAdapter adapter2(door);
-  
-  // Оба адаптера должны видеть одно состояние двери
+
   EXPECT_TRUE(door.isDoorOpened());
-  
+
   door.lock();
   EXPECT_FALSE(door.isDoorOpened());
-  
-  // Оба адаптера не должны выбрасывать исключение при закрытой двери
+
   EXPECT_NO_THROW(adapter1.Timeout());
   EXPECT_NO_THROW(adapter2.Timeout());
 }
